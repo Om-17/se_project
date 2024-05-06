@@ -101,7 +101,7 @@ class SyncData {
             "d_duration",
             "d_routeuse",
             "d_placevislastyear",
-            "d_familydetails",
+            "d_familydeatils",
             "d_deradetails"
         )
 
@@ -117,7 +117,7 @@ class SyncData {
 
         cursor?.use {
             while (it.moveToNext()) {
-                val d_familydetailsJson = it.getString(it.getColumnIndexOrThrow("d_familydetails"))
+                val d_familydetailsJson = it.getString(it.getColumnIndexOrThrow("d_familydeatils"))
                 val d_familydetailsList: List<FamilyDetail> = Gson().fromJson(
                     d_familydetailsJson,
                     object : TypeToken<List<FamilyDetail>>() {}.type
