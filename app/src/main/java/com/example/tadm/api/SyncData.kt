@@ -118,15 +118,22 @@ class SyncData {
         cursor?.use {
             while (it.moveToNext()) {
                 val d_familydetailsJson = it.getString(it.getColumnIndexOrThrow("d_familydeatils"))
-                val d_familydetailsList: List<FamilyDetail> = Gson().fromJson(
-                    d_familydetailsJson,
-                    object : TypeToken<List<FamilyDetail>>() {}.type
-                )
+
+               var d_familydetailsList: List<FamilyDetail> = emptyList<FamilyDetail>()
+//                if (!d_familydetailsJson.isNullOrEmpty()) {
+//                    d_familydetailsList = Gson().fromJson(
+//                       d_familydetailsJson,
+//                       object : TypeToken<List<FamilyDetail>>() {}.type
+//                   )
+//               }
+
                 val d_deradetailsJson = it.getString(it.getColumnIndexOrThrow("d_deradetails"))
-                val d_deradetailsMap: Map<String, String> = Gson().fromJson(
-                    d_deradetailsJson,
-                    object : TypeToken<Map<String, String>>() {}.type
-                )
+                println(d_deradetailsJson)
+                var d_deradetailsMap: Map<String, String> = emptyMap()
+//                val d_deradetailsMap: Map<String, String> = Gson().fromJson(
+//                    d_deradetailsJson,
+//                    object : TypeToken<Map<String, String>>() {}.type
+//                )
 
                 val personDetail = PersonDetail(
                     id = -1, // The actual id value is not retrieved from the database in this example
@@ -141,7 +148,7 @@ class SyncData {
                     d_duration = it.getString(it.getColumnIndexOrThrow("d_duration")),
                     d_routeuse = it.getString(it.getColumnIndexOrThrow("d_routeuse")),
                     d_placevislastyear = it.getString(it.getColumnIndexOrThrow("d_placevislastyear")),
-                 d_picurl=it.getString(it.getColumnIndexOrThrow("d_picurl")),
+//                 d_picurl=it.getString(it.getColumnIndexOrThrow("d_picurl")),
                     d_deradetails = d_deradetailsMap,
                     d_familydeatils =  d_familydetailsList,
 

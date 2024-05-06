@@ -24,7 +24,7 @@ data class PersonDetail(
     val id: Int,
     val d_id: String,
     val d_name: String,
-    val d_picurl: String?,
+    val d_picurl: String?="",
     val d_fathername: String,
     val d_address: String,
     val d_religion: String,
