@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 val syncData = SyncData()
                 val syncSuccessful = syncData.syncData(this@MainActivity)
-
+                syncData.printSQLiteData(this@MainActivity)
                 hideLoader()
 
 //                if (syncSuccessful) {
