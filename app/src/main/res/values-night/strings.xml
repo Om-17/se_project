@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search">Search</string>
+    <string name="existing_dera">Existing Dera</string>
+    <string name="basic_details">Basic Details</string>
+    <string name="family_details">Family Details</string>
+    <string name="dera_details">Dera Details</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="person">person</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="name">Name</string>
+    <string name="mobile_no">Mobile No</string>
+    <string name="father_name">Father Name</string>
+    <string name="address">Address</string>
+    <string name="marital_status">Marital Status</string>
+    <string name="place_vist_last_year">Place Vist Last Year</string>
+    <string name="sheep">Sheep</string>
+    <string name="ox">Ox</string>
+    <string name="cow">Cow</string>
+    <string name="bull">Bull</string>
+    <string name="horse">Horse</string>
+    <string name="dog">Dog</string>
+    <string name="goat">Goat</string>
+    <string name="camera">camera</string>
+    <string name="gender">Gender</string>
+    <string name="search_category">Search Category</string>
+    <string name="are_you_sure_you_want_to_proceed">are you sure you want to proceed</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="loading">Loading...</string>
+</resources>

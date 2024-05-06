@@ -1,0 +1,8 @@
+package com.example.tadm.api.base
+import java.lang.Exception
+
+class ApiError : Exception()
+{
+    var statusCode: Int = 0
+    val messages: List<String>? = null
+}

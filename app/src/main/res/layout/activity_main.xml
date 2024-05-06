@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!--    <ScrollView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        tools:layout_editor_absoluteX="16dp"-->
+    <!--        tools:layout_editor_absoluteY="288dp">-->
+
+
+    <!--      -->
+    <!--    </ScrollView>-->
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="183dp"
+        android:layout_height="51dp"
+        android:layout_marginTop="104dp"
+        android:gravity="center"
+        android:text="@string/tadm"
+        android:textColor="@color/dark_green"
+        android:textSize="47sp"
+        app:layout_constraintBottom_toTopOf="@+id/new_entry_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.185" />
+
+    <Button
+        android:id="@+id/new_entry_btn"
+        android:layout_width="286dp"
+        android:layout_height="68dp"
+        android:layout_marginBottom="28dp"
+
+        android:text="@string/new_entry"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toTopOf="@+id/search_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/search_btn"
+        android:layout_width="286dp"
+        android:layout_height="68dp"
+        android:layout_marginBottom="28dp"
+        android:text="@string/search"
+
+        android:textSize="23sp"
+        app:layout_constraintBottom_toTopOf="@+id/existing_dera"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/existing_dera"
+        android:layout_width="286dp"
+        android:layout_height="68dp"
+
+        android:layout_marginBottom="172dp"
+        android:text="@string/existing_dera"
+        android:textSize="23sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

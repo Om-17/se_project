@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".FamilyDetailsFragment">
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/textViewWithBorder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingVertical="10dp"
+            android:text="@string/family_details"
+            android:textColor="@color/dark_green"
+            android:textSize="25sp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:layout_below="@id/textViewWithBorder"
+            android:background="@color/green"
+            android:layout_marginBottom="10dp"
+            />
+    </RelativeLayout>
+
+        <ScrollView
+            android:id="@+id/list_item"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/tadm"
+            android:orientation="vertical">
+
+            <LinearLayout
+
+                android:id="@+id/input_box_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/nameTxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="@string/name"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="text"-->
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/agetxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="@string/age"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="number"-->
+                <!--                        android:maxLines="3"-->
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/genderTxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="Gender"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="text"-->
+
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/RelationTxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="@string/relation"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="text"-->
+
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/aadharTxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="@string/aadhar_no"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="number"-->
+
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+
+                <!--                <com.google.android.material.textfield.TextInputLayout-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:layout_marginVertical="5dp"-->
+                <!--                    android:layout_marginHorizontal="20dp"-->
+                <!--                    android:layout_marginTop="20dp">-->
+
+                <!--                    <com.google.android.material.textfield.TextInputEditText-->
+                <!--                        android:id="@+id/mobileTxt"-->
+                <!--                        android:layout_width="match_parent"-->
+                <!--                        android:layout_height="wrap_content"-->
+                <!--                        android:hint="@string/mobile_no"-->
+                <!--                        android:importantForAutofill="no"-->
+                <!--                        android:inputType="number"-->
+
+                <!--                        android:textColorHint="#555"-->
+                <!--                        android:textSize="15sp" />-->
+
+                <!--                </com.google.android.material.textfield.TextInputLayout>-->
+                <!--                <View-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="3dp"-->
+
+                <!--                    android:background="@color/green"-->
+
+                <!--                    android:layout_marginVertical="10dp"-->
+                <!--                    />-->
+            </LinearLayout>
+
+        </ScrollView>
+
+        <Button
+            android:id="@+id/addBtn"
+
+            android:layout_marginHorizontal="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="@string/add" />
+    </LinearLayout>
+
+
+
+</FrameLayout>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+    <LinearLayout
+        android:id="@+id/show_main"
+        android:layout_width="match_parent"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/circle_shape"
+        android:scaleType="centerCrop"
+        android:padding="1dp"
+
+            android:src="@drawable/baseline_person"
+            />
+
+        <LinearLayout
+            android:layout_width="220dp"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Other initial fields -->
+            <TextView
+                android:id="@+id/fatherNameTextView"
+                android:layout_below="@id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Father's Name:"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/mobNoTextView"
+                android:layout_below="@id/fatherNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mobile Number"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/expandButton"
+            android:layout_width="50dp"
+            android:layout_height="48dp"
+
+            android:layout_marginEnd="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_background"
+            android:contentDescription="more"
+            android:onClick="toggleExpand"
+            android:padding="4dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/baseline_expand_more_24"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+
+
+
+    <!-- Expandable area -->
+    <LinearLayout
+        android:id="@+id/expandableLayout"
+        android:layout_below="@id/show_main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:paddingTop="16dp">
+
+
+        <TextView
+            android:id="@+id/addressTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address"
+            android:textSize="16sp" />
+
+
+    </LinearLayout>
+
+    <!-- Button to toggle expansion -->
+
+</RelativeLayout>
+</androidx.cardview.widget.CardView>
