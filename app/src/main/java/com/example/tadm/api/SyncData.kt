@@ -122,6 +122,12 @@ class SyncData {
                     d_familydetailsJson,
                     object : TypeToken<List<FamilyDetail>>() {}.type
                 )
+                val d_deradetailsJson = it.getString(it.getColumnIndexOrThrow("d_deradetails"))
+                val d_deradetailsMap: Map<String, String> = Gson().fromJson(
+                    d_deradetailsJson,
+                    object : TypeToken<Map<String, String>>() {}.type
+                )
+
                 val personDetail = PersonDetail(
                     id = -1, // The actual id value is not retrieved from the database in this example
                     d_id = it.getString(it.getColumnIndexOrThrow("d_id")),
@@ -136,11 +142,11 @@ class SyncData {
                     d_routeuse = it.getString(it.getColumnIndexOrThrow("d_routeuse")),
                     d_placevislastyear = it.getString(it.getColumnIndexOrThrow("d_placevislastyear")),
                  d_picurl=it.getString(it.getColumnIndexOrThrow("d_picurl")),
-                    d_deradetails = null,
+                    d_deradetails = d_deradetailsMap,
                     d_familydeatils =  d_familydetailsList,
 
                 )
-//                Log.d("SQLiteData", "Person Detail: $personDetail")
+                Log.d("SQLiteData", "Person Detail: $personDetail")
             }
         }
     }
