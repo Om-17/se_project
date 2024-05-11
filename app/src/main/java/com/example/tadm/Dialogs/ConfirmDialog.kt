@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.example.tadm.R
 
-class CustomConfirmDialog(
+class ConfirmDialog(
     context: Context,
     private val onYesClick: () -> Unit,
     private val onNoClick: () -> Unit,

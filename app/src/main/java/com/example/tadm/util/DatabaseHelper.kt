@@ -6,11 +6,11 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "lc_db", null, 1) {
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL("""
-            DROP TABLE IF EXISTS syncData 
-        """.trimIndent())
+//        db.execSQL("""
+//            DROP TABLE IF EXISTS syncData
+//        """.trimIndent())
         db.execSQL(
-            """ CREATE TABLE IF NOT EXISTS personDetail (Id INTEGER PRIMARY KEY AUTOINCREMENT,d_id Text Not Null,d_name TEXT Not Null,d_fathername TEXT Not Null,d_address LONGTEXT Not Null,d_religion TEXT Not Null,d_maritalstatus TEXT Not Null,d_mobno TEXT Not Null,d_destination TEXT Not Null,d_routeuse TEXT Not Null,d_placevislastyear TEXT Not Null,d_duration TEXT Not Null,d_familydeatils LONGTEXT ,d_picurl LONGTEXT  ) """
+            """ CREATE TABLE IF NOT EXISTS personDetail (Id INTEGER PRIMARY KEY AUTOINCREMENT,d_id Text ,d_name TEXT ,d_fathername TEXT ,d_address LONGTEXT ,d_religion TEXT ,d_maritalstatus TEXT ,d_mobno TEXT ,d_destination TEXT ,d_routeuse TEXT ,d_placevislastyear TEXT ,d_duration TEXT ,d_familydeatils LONGTEXT,d_deradetails LONGTEXT ,d_picurl LONGTEXT,d_age INTEGER   ) """
         )
         db.execSQL(
             """CREATE TABLE IF NOT EXISTS syncData (

@@ -25,7 +25,8 @@ interface NewEntryApiServiceInterface {
         @Part("d_duration") d_duration: RequestBody,
         @Part("d_familydeatils") d_familydeatils:RequestBody,
         @Part("d_deradetails") d_deradetails:RequestBody,
-//        @Part("d_picurl") imagePart: MultipartBody.Part? =null
+        @Part("d_age") d_age:RequestBody,
+        @Part d_picurl: MultipartBody.Part? = null
     ): Call<ResponseBody>
 }
 

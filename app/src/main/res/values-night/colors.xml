@@ -10,4 +10,6 @@
     <color name="red">#FF6464</color>
     <color name="darkmode_lightgreen">#003615</color>
     <color name="light_green">#C4FFDA</color>
+    <color name="light_red">#FFCDD2</color>
+
 </resources>

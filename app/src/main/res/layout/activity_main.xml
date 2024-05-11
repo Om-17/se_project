@@ -16,57 +16,67 @@
     <!--      -->
     <!--    </ScrollView>-->
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="183dp"
-        android:layout_height="51dp"
-        android:layout_marginTop="104dp"
-        android:gravity="center"
-        android:text="@string/tadm"
-        android:textColor="@color/dark_green"
-        android:textSize="47sp"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:src="@drawable/armylogo"
+
         app:layout_constraintBottom_toTopOf="@+id/new_entry_btn"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.185" />
+        app:layout_constraintVertical_bias="0.704" />
 
     <Button
         android:id="@+id/new_entry_btn"
         android:layout_width="286dp"
         android:layout_height="68dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="16dp"
 
         android:text="@string/new_entry"
         android:textSize="23sp"
         app:layout_constraintBottom_toTopOf="@+id/search_btn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/search_btn"
         android:layout_width="286dp"
         android:layout_height="68dp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/search"
 
         android:textSize="23sp"
-        app:layout_constraintBottom_toTopOf="@+id/existing_dera"
+        app:layout_constraintBottom_toTopOf="@+id/syncBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/existing_dera"
+        android:id="@+id/syncBtn"
         android:layout_width="286dp"
         android:layout_height="68dp"
+        android:layout_marginBottom="104dp"
 
-        android:layout_marginBottom="172dp"
-        android:text="@string/existing_dera"
+        android:text="Sync Data"
         android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/deras"
+        android:textSize="40sp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

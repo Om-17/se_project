@@ -2,7 +2,9 @@ package com.example.tadm
 
 import android.content.Context
 import android.os.Bundle
+import android.text.InputFilter
 import android.text.InputType
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +13,11 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.core.content.ContextCompat
+import androidx.core.view.marginStart
 import com.example.tadm.Interface.BeforeNextClickListener
 import com.example.tadm.Interface.FragmentDataListener
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -22,7 +27,7 @@ import org.json.JSONObject
 class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
     private val inputLayoutList = mutableListOf<TextInputLayout>()
     private lateinit var listener: FragmentDataListener
-
+    private lateinit var containerLayout: LinearLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,18 +64,19 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
         listLayout = view.findViewById(R.id.input_box_layout)
         scrollView = view.findViewById(R.id.list_item)
         addBtn = view.findViewById(R.id.addBtn)
-        addNewForm()
+        containerLayout = scrollView.findViewById(R.id.input_box_layout) // Initialize containerLayout
+
+        addNewForm(true)
 
         addBtn.setOnClickListener {
-            addNewForm()
+            addNewForm(false)
         }
 
 
         return  view
     }
     private var formCounter = 0
-
-    private fun addNewForm() {
+    private fun addNewForm(isFirstRecord:Boolean) {
         // Inflate the input box layout for a new form
         val inputLayout = LayoutInflater.from(requireContext())
             .inflate(R.layout.input_box_layout, scrollView, false) as LinearLayout
@@ -83,24 +89,83 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
-//        val genderDropdown: MaterialAutoCompleteTextView = inputLayout.findViewById(R.id.genderTxt)
-//        val genders = arrayOf("Male", "Female", "Other")
-//        val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, genders)
-//        genderDropdown.setAdapter(adapter)
-//
-//// Set the input type to none
-//        genderDropdown.inputType = InputType.TYPE_NULL
+
+        val mobno:TextInputEditText = inputLayout.findViewById(R.id.mobileTxt)
+        val inputMobFilter = InputFilter.LengthFilter(10)
+        mobno.filters = arrayOf(inputMobFilter)
+
+
         textInputLayout.addView(inputLayout)
+
+        // Add the delete button to the TextInputLayout
+
+
+        if (!isFirstRecord) {
+            val deleteBtn = MaterialButton(requireContext())
+            deleteBtn.text = "Delete"
+            deleteBtn.layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+
+                    gravity = Gravity.CENTER
+                    marginStart = resources.getDimensionPixelSize(R.dimen.margin_start)
+                    marginEnd= resources.getDimensionPixelSize(R.dimen.margin_start)
+
+                    gravity = Gravity.END
+
+            }
+
+            deleteBtn.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.red))
+            deleteBtn.setOnClickListener {
+                // Remove the corresponding input layout and view when the delete button is clicked
+                inputLayoutList.remove(textInputLayout)
+                containerLayout.removeView(textInputLayout)
+            }
+
+            textInputLayout.addView(deleteBtn)
+        }
 
         // Add the new TextInputLayout to the container layout inside the ScrollView
         val containerLayout = scrollView.findViewById<LinearLayout>(R.id.input_box_layout)
         containerLayout.addView(textInputLayout)
         inputLayoutList.add(textInputLayout)
-        println("add")
-        println(inputLayoutList)
-        println(textInputLayout)
-        // Add the TextInputLayout to the list for later reference if needed
     }
+
+//    private fun addNewForm() {
+//        // Inflate the input box layout for a new form
+//        val inputLayout = LayoutInflater.from(requireContext())
+//            .inflate(R.layout.input_box_layout, scrollView, false) as LinearLayout
+//
+//        // Customize the new input layout here if needed
+//
+//        // Create a new TextInputLayout and add the inflated LinearLayout as its child
+//        val textInputLayout = TextInputLayout(requireContext())
+//        textInputLayout.layoutParams = LinearLayout.LayoutParams(
+//            LinearLayout.LayoutParams.MATCH_PARENT,
+//            LinearLayout.LayoutParams.WRAP_CONTENT
+//        )
+////        val genderDropdown: MaterialAutoCompleteTextView = inputLayout.findViewById(R.id.genderTxt)
+////        val genders = arrayOf("Male", "Female", "Other")
+////        val adapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, genders)
+////        genderDropdown.setAdapter(adapter)
+////
+////// Set the input type to none
+////        genderDropdown.inputType = InputType.TYPE_NULL
+//        val mobno:TextInputEditText = inputLayout.findViewById(R.id.mobileTxt)
+//        val inputMobFilter = InputFilter.LengthFilter(10)
+//        mobno.filters = arrayOf(inputMobFilter)
+//        textInputLayout.addView(inputLayout)
+//
+//        // Add the new TextInputLayout to the container layout inside the ScrollView
+//        val containerLayout = scrollView.findViewById<LinearLayout>(R.id.input_box_layout)
+//        containerLayout.addView(textInputLayout)
+//        inputLayoutList.add(textInputLayout)
+//        println("add")
+//        println(inputLayoutList)
+//        println(textInputLayout)
+//        // Add the TextInputLayout to the list for later reference if needed
+//    }
 
 
     private fun collectInputValues(): JSONArray {

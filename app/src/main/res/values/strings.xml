@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Tadm</string>
+    <string name="app_name">SE</string>
     <string name="tadm">TADM</string>
     <string name="new_entry">New Entry</string>
     <string name="search">Search</string>
@@ -43,4 +43,9 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="loading">Loading...</string>
+    <string name="coming_from">Coming From</string>
+    <string name="date_of_registration">Date of Registration</string>
+    <string name="sohang_education">Sohang Education</string>
+    <string name="delete">Delete</string>
+    <string name="deras">DeRas</string>
 </resources>

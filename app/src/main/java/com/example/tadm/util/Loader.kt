@@ -12,10 +12,11 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import com.example.tadm.R
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.*
 
 class Loader(context: Context, private val message:String="") : Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen) {
-    private lateinit var progressBar: ProgressBar
+    private lateinit var progressBar: CircularProgressIndicator
     private lateinit var messtxt : TextView
     init {
 

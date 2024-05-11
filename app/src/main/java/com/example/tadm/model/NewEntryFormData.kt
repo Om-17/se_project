@@ -17,7 +17,9 @@ data class NewEntryFormData(
     val imageData: Uri?=null,// Uri for the image data
     var d_familydeatils: String? =null,
     var d_deradetails: String? =null,
-
+    var d_url: String? = "",
+    var is_camera:Boolean= false,
+    var d_age:String?=null
     )
 
 data class PersonDetail(
@@ -35,7 +37,9 @@ data class PersonDetail(
     val d_routeuse: String,
     val d_placevislastyear: String,
     val d_familydeatils: List<FamilyDetail>?= emptyList(),
-    val d_deradetails: Map<String, String>? = null
+    val d_deradetails: Map<String, String>? = null,
+    var isExpanded: Boolean = false ,// default value is false
+    var d_age:String=""
 )
 
 data class FamilyDetail(

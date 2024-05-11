@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--expandable_card_view.xml-->
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,6 +12,7 @@
     app:cardUseCompatPadding="true">
 
 <RelativeLayout
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
@@ -20,9 +22,10 @@
         android:gravity="center_vertical"
         android:layout_height="wrap_content">
         <ImageView
+            android:id="@+id/img"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:background="@drawable/circle_shape"
+
         android:scaleType="centerCrop"
         android:padding="1dp"
 
@@ -30,7 +33,7 @@
             />
 
         <LinearLayout
-            android:layout_width="220dp"
+            android:layout_width="190dp"
             android:orientation="vertical"
             android:paddingHorizontal="10dp"
             android:layout_height="wrap_content">
@@ -65,7 +68,6 @@
             android:layout_width="50dp"
             android:layout_height="48dp"
 
-            android:layout_marginEnd="20dp"
             android:layout_weight="1"
             android:background="@drawable/circle_background"
             android:contentDescription="more"
@@ -88,13 +90,28 @@
         android:visibility="gone"
         android:paddingTop="16dp">
 
+<!--<LinearLayout-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:paddingVertical="7dp"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:orientation="horizontal">-->
+<!--    <TextView-->
+<!--        android:id="@+id/addressLbl"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Address :"-->
+<!--        android:paddingEnd="5dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:textSize="16sp" />-->
+<!--    <TextView-->
+<!--        android:id="@+id/addressTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Address"-->
+<!--        android:layout_weight="1"-->
+<!--        android:textSize="16sp" />-->
+<!--</LinearLayout>-->
 
-        <TextView
-            android:id="@+id/addressTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Address"
-            android:textSize="16sp" />
 
 
     </LinearLayout>

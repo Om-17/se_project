@@ -1,12 +1,15 @@
 package com.example.tadm
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -16,15 +19,22 @@ import com.example.tadm.Interface.BeforeNextClickListener
 import com.example.tadm.Interface.FragmentDataListener
 import com.example.tadm.api.ApiHelper
 import com.example.tadm.model.NewEntryFormData
+import com.example.tadm.util.ConnectivityUtil
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import android.Manifest
+import androidx.core.app.ActivityCompat
+import com.example.tadm.util.Loader
 
 class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickListener  {
     private var currentStep = 0
     private val totalSteps = 3 // Number of steps in the stepper
     private lateinit var adapter:StepperPagerAdapter
     private lateinit var viewPager: ViewPager2
+    private lateinit var loader: Loader
+
     private var formdata = NewEntryFormData()
+
     override fun onBasicDataReceived(data: NewEntryFormData){
         println("basic detail for $data")
         formdata=data
@@ -46,14 +56,23 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
             formdata.d_deradetails=data
             println("dera details $data")
         }
+    private val REQUEST_CODE_STORAGE_PERMISSION = 1001
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_entry_form)
+        if (!ConnectivityUtil.isInternetAvailable(this)) {
+            showConnectivityAlert()
+        } else {
+
+
         viewPager = findViewById(R.id.viewPager)
         val tabs: TabLayout = findViewById(R.id.tabs)
         val btnBack: Button = findViewById(R.id.btnBack)
         val btnNext: Button = findViewById(R.id.btnNext)
         val btnSave: Button = findViewById(R.id.btnSave)
+
+            loader = Loader(this,"Please Wait Submiting Data.")
+
 
         // Create an adapter for managing fragments in the ViewPager
         adapter = StepperPagerAdapter(this, supportFragmentManager, lifecycle) // Use 'this' as BeforeNextClickListener
@@ -95,16 +114,30 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
                 btnNext.visibility = if (currentStep == totalSteps - 1) View.GONE else View.VISIBLE // Hide Next button on last step
             }
         }
-
+            if (ContextCompat.checkSelfPermission(
+                    applicationContext,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ){
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    REQUEST_CODE_STORAGE_PERMISSION
+                )
+            }
         btnSave.setOnClickListener {
             onBeforeNextClicked()
             println(formdata)
             btnSave.visibility=View.INVISIBLE
+            showLoader()
             ApiHelper.uploadFormData(
                 formdata,
-                // Pass other parameters
+
                 onResponse = { response ->
                     // Handle API response
+
+                    hideLoader()
+
                     btnSave.visibility=View.VISIBLE
 
                     Toast.makeText(this, "Sucessfully created.", Toast.LENGTH_SHORT).show()
@@ -117,11 +150,13 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
                 onFailure = { throwable ->
                     Toast.makeText(this, throwable.message, Toast.LENGTH_SHORT).show()
                     btnSave.visibility=View.VISIBLE
+                    hideLoader()
 
                     // Handle API call failure
                     println("API call failed: ${throwable.message}")
                 }
             )
+        }
         }
     }
 
@@ -133,7 +168,33 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
             else -> "Step ${position + 1}"
         }
     }
-
+    private fun showLoader() {
+        if (!isFinishing && !isDestroyed) { // Check if activity is running
+            loader.show()
+        }
+    }
+    private fun hideLoader() {
+        if (loader.isShowing) {
+            loader.dismiss()
+        }
+    }
+    private fun showConnectivityAlert() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.apply {
+            setTitle("No Internet Connection")
+            setMessage("Please check your internet connection and try again.")
+            setPositiveButton("Retry") { dialog, _ ->
+                dialog.dismiss()
+                recreate() // Recreate the activity to retry
+            }
+            setNegativeButton("Exit") { dialog, _ ->
+                dialog.dismiss()
+                finish() // Close the app if the user chooses to exit
+            }
+            setCancelable(false)
+            create().show()
+        }
+    }
 
 }
 
@@ -160,7 +221,9 @@ class StepperPagerAdapter(private val beforeNextClickListener: BeforeNextClickLi
             else -> throw IllegalArgumentException("Invalid position: $position")
         }
     }
+
 }
+
 
 //    override fun createFragment(position: Int): Fragment {
 //        return when (position) {
