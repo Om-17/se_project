@@ -10,8 +10,30 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "lc_db", null
 //            DROP TABLE IF EXISTS syncData
 //        """.trimIndent())
         db.execSQL(
-            """ CREATE TABLE IF NOT EXISTS personDetail (Id INTEGER PRIMARY KEY AUTOINCREMENT,d_id Text ,d_name TEXT ,d_fathername TEXT ,d_address LONGTEXT ,d_religion TEXT ,d_maritalstatus TEXT ,d_mobno TEXT ,d_destination TEXT ,d_routeuse TEXT ,d_placevislastyear TEXT ,d_duration TEXT ,d_familydeatils LONGTEXT,d_deradetails LONGTEXT ,d_picurl LONGTEXT,d_age INTEGER   ) """
-        )
+         """
+             CREATE TABLE IF NOT EXISTS personDetail (
+                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 d_id TEXT,
+                 d_name TEXT,
+                 d_fathername TEXT,
+                 d_address LONGTEXT,
+                 d_religion TEXT,
+                 d_maritalstatus TEXT,
+                 d_mobno TEXT,
+                 d_destination TEXT,
+                 d_routeuse TEXT,
+                 d_placevislastyear TEXT,
+                 d_duration TEXT,
+                 d_familydeatils LONGTEXT,
+                 d_deradetails LONGTEXT,
+                 d_picurl LONGTEXT,
+                 d_age INTEGER,
+                 is_sync BOOLEAN DEFAULT 'false',
+                 is_create BOOLEAN DEFAULT 'false'
+             )
+
+         """.trimIndent()
+          )
         db.execSQL(
             """CREATE TABLE IF NOT EXISTS syncData (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,

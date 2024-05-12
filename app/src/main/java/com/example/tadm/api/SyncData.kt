@@ -27,6 +27,10 @@ class SyncData {
 
     private val apiService: ApiGetNewEntryService =
         retrofit.create(ApiGetNewEntryService::class.java)
+
+    fun createDataSync(context: Context){
+
+    }
     suspend fun syncData(context: Context): Boolean {
         val dbHelper = DatabaseHelper(context)
         val db = dbHelper.writableDatabase

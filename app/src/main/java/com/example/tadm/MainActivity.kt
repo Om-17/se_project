@@ -112,29 +112,29 @@ class MainActivity : AppCompatActivity() {
             // Start the new activity
             startActivity(intent)
         }
-
-        if (ConnectivityUtil.isInternetAvailable(this)) {
-
-            showLoader()
-            lifecycleScope.launch {
-                withContext(Dispatchers.Main) {
-                    showLoader()
-                }
-//                val syncData = SyncData()
-//                val syncSuccessful = syncData.syncData(this@MainActivity)
-
-
-
-                    val syncData = SyncData()
-                    val syncSuccessful = syncData.syncData(this@MainActivity)
-                    println("statue==> $syncSuccessful")
-
-
-                withContext(Dispatchers.Main) {
-                    hideLoader()
-                }
-            }
-        }
+//
+//        if (ConnectivityUtil.isInternetAvailable(this)) {
+//
+//            showLoader()
+//            lifecycleScope.launch {
+//                withContext(Dispatchers.Main) {
+//                    showLoader()
+//                }
+////                val syncData = SyncData()
+////                val syncSuccessful = syncData.syncData(this@MainActivity)
+//
+//
+//
+//                    val syncData = SyncData()
+//                    val syncSuccessful = syncData.syncData(this@MainActivity)
+//                    println("statue==> $syncSuccessful")
+//
+//
+//                withContext(Dispatchers.Main) {
+//                    hideLoader()
+//                }
+//            }
+//        }
 }
     private fun showLoader() {
         if (!isFinishing && !isDestroyed) { // Check if activity is running

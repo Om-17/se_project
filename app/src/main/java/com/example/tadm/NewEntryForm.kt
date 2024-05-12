@@ -60,9 +60,6 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_entry_form)
-        if (!ConnectivityUtil.isInternetAvailable(this)) {
-            showConnectivityAlert()
-        } else {
 
 
         viewPager = findViewById(R.id.viewPager)
@@ -130,33 +127,37 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
             println(formdata)
             btnSave.visibility=View.INVISIBLE
             showLoader()
-            ApiHelper.uploadFormData(
-                formdata,
+            if (!ConnectivityUtil.isInternetAvailable(this)) {
+                showConnectivityAlert()
+            } else {
 
-                onResponse = { response ->
-                    // Handle API response
+                ApiHelper.uploadFormData(
+                    formdata,
 
-                    hideLoader()
+                    onResponse = { response ->
+                        // Handle API response
 
-                    btnSave.visibility=View.VISIBLE
+                        hideLoader()
 
-                    Toast.makeText(this, "Sucessfully created.", Toast.LENGTH_SHORT).show()
-                    println("Response: $response")
-                    val intent = Intent(this, MainActivity::class.java)
+                        btnSave.visibility = View.VISIBLE
 
-                    startActivity(intent)
-                    finish()
-                },
-                onFailure = { throwable ->
-                    Toast.makeText(this, throwable.message, Toast.LENGTH_SHORT).show()
-                    btnSave.visibility=View.VISIBLE
-                    hideLoader()
+                        Toast.makeText(this, "Sucessfully created.", Toast.LENGTH_SHORT).show()
+                        println("Response: $response")
+                        val intent = Intent(this, MainActivity::class.java)
 
-                    // Handle API call failure
-                    println("API call failed: ${throwable.message}")
-                }
-            )
-        }
+                        startActivity(intent)
+                        finish()
+                    },
+                    onFailure = { throwable ->
+                        Toast.makeText(this, throwable.message, Toast.LENGTH_SHORT).show()
+                        btnSave.visibility = View.VISIBLE
+                        hideLoader()
+
+                        // Handle API call failure
+                        println("API call failed: ${throwable.message}")
+                    }
+                )
+            }
         }
     }
 

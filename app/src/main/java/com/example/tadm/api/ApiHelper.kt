@@ -50,9 +50,7 @@ object ApiHelper {
 //        if(!formData.is_camera){
 
         var imageUri= Uri.parse(formData.d_url.toString())
-
         var imageFile = File(imageUri?.path ?: "")
-
 
         var d_picurl: MultipartBody.Part? = null
         if (imageFile.exists()) {
