@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -45,6 +47,9 @@ import java.util.Locale
 import android.util.Base64
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
 
 class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
     private val inputLayoutList = mutableListOf<TextInputLayout>()
@@ -109,6 +114,22 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
 
 
         return view
+    }
+    private val MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024 // 8MB in bytes
+
+    private fun checkImageSize(uri: Uri): Boolean {
+        val contentResolver = requireContext().contentResolver
+        var inputStream: InputStream? = null
+        try {
+            inputStream = contentResolver.openInputStream(uri)
+            val bytes = inputStream?.available() ?: 0
+            return bytes <= MAX_IMAGE_SIZE_BYTES
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            inputStream?.close()
+        }
+        return false
     }
 
     private fun openImagePicker(imageView: ImageView) {
@@ -189,17 +210,22 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
                     // Get the imageViewId from the intent extras
 //                    val imageViewId = data.getIntExtra("imageViewId", 0)
                     Log.d("ImageViewId", "Received imageViewId: $imgViewID")
-
-                    if (imgViewID != 0) {
-                        // Find the ImageView using the imageViewId and set the image URI
-                        val imageView: ImageView? = requireView().findViewById(imgViewID)
-                        imgViewID=0
-                        Log.d("ImageViewId", "Found ImageView: $imageView")
-                        imageView?.setImageURI(uri)
-                        imageView?.tag = uri
+                    if (checkImageSize(uri)) {
+                        if (imgViewID != 0) {
+                            // Find the ImageView using the imageViewId and set the image URI
+                            val imageView: ImageView? = requireView().findViewById(imgViewID)
+                            imgViewID=0
+                            Log.d("ImageViewId", "Found ImageView: $imageView")
+                            imageView?.setImageURI(uri)
+                            imageView?.tag = uri
+                        } else {
+                            Log.e("ImageViewId", "Invalid imageViewId received: $imgViewID")
+                        }
                     } else {
-                        Log.e("ImageViewId", "Invalid imageViewId received: $imgViewID")
+                        // Image size exceeds the limit, show an error message
+                        Toast.makeText(requireContext(), "Image size exceeds 8MB limit.", Toast.LENGTH_SHORT).show()
                     }
+
                 }
             } else if (requestCode == CAMERA_REQUEST_CODE) {
                 // Get the URI of the captured image from the camera
@@ -268,8 +294,33 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
         val imageFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
         Log.i("ImageFile", "Image file path: ${imageFile.absolutePath}")
 //        path_string=imageFile.absolutePath
+        compressImage(imageFile)
         return imageFile // Return the original file if renaming fails
 
+    }
+    private fun compressImage(imageFile: File) {
+        val options = BitmapFactory.Options()
+        options.inSampleSize = 2 // Adjust the sample size as needed for compression
+
+        var inputStream: InputStream? = null
+        var outputStream: FileOutputStream? = null
+
+        try {
+            inputStream = FileInputStream(imageFile)
+            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+
+            outputStream = FileOutputStream(imageFile)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+
+            // Recycle the bitmap to free up memory
+            bitmap?.recycle()
+        // Adjust compression quality as needed
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            inputStream?.close()
+            outputStream?.close()
+        }
     }
     private fun addNewForm(isFirstRecord:Boolean) {
         // Inflate the input box layout for a new form
@@ -398,7 +449,7 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
                 // Convert the image to base64 format
                 val base64Image = convertImageToBase64(imageUri, requireContext())
 
-              var  finalDataUri:String=""
+                var  finalDataUri:String=""
                 if (!flag) {
                      finalDataUri = "data:${path_string?.substringAfterLast('/')};base64:$base64Image"
 
@@ -407,8 +458,10 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
                      finalDataUri = "data:${imageUri.encodedPath?.substringAfterLast('/')};base64:$base64Image"
 
                 }
-                jsonObject.put("data_uri", finalDataUri)
-                jsonObject.put("image_uri", imageUri.toString() ?: "")
+
+                jsonObject.put("image_data", finalDataUri)
+
+                jsonObject.put("image_base64",finalDataUri)
 
             }
 

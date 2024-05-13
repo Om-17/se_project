@@ -61,6 +61,8 @@ class SyncData {
                                     put("d_picurl",personDetail.d_picurl)
                                     put("d_placevislastyear", personDetail.d_placevislastyear)
                                     put("d_age", personDetail.d_age)
+                                    put("is_create",true)
+                                    put("is_sync",true)
                                     put(
                                         "d_familydeatils",
                                         Gson().toJson(personDetail.d_familydeatils)

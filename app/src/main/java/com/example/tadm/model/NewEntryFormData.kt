@@ -48,5 +48,7 @@ data class FamilyDetail(
     val gender: String,
     val relation: String,
     val aadhar_no: String,
-    val mobile_no: String
+    val mobile_no: String,
+    val image_data:String,
+    val image_base64:String
 )

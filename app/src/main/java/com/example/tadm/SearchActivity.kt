@@ -252,7 +252,7 @@ class SearchActivity : AppCompatActivity() {
                                 object : TypeToken<List<FamilyDetail>>() {}.type
                             )
                         )
-                        println("list $personDetail")
+//                        println("list $personDetail")
                         personList.add(personDetail)
                     }
                 }

@@ -14,6 +14,8 @@ import com.example.tadm.model.PersonDetail
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Transformation
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.Gravity
 import com.example.tadm.model.FamilyDetail
 import com.google.android.material.button.MaterialButton
@@ -178,18 +180,49 @@ class PersonAdapter(private val context: Context, private val personList: List<P
         }
         private fun addFamilydetails(familyDetail: List<FamilyDetail>) {
             for (detail in familyDetail) {
+                val familytextView = TextView(itemView.context)
+                familytextView.layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                val label = "Family Detail:"
+
+                familytextView.text = "$label"
+                familytextView.textSize = 18f
+                familytextView.setPadding(0, 7.dpToPx(itemView.context), 0, 0)
+                expandableLayout.addView(familytextView)
+
                 val textView = TextView(itemView.context)
                 textView.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                val label = "Family Detail:"
                 val value = "\n Name: ${detail.name}\n Age: ${detail.age}\n Gender: ${detail.gender}\n " +
                         "Relation: ${detail.relation}\n Aadhar No: ${detail.aadhar_no}\n " +
-                        "Mobile No: ${detail.mobile_no}\n"
-                textView.text = "$label $value"
+                        "Mobile No: ${detail.mobile_no}"
+                textView.text = " $value"
                 textView.textSize = 16f
                 textView.setPadding(0, 7.dpToPx(itemView.context), 0, 0)
+                // Set image to ImageView
+                if (detail.image_base64.isNotEmpty()) {
+                    val imageDataParts = detail.image_base64.split(";base64")
+                    println(imageDataParts)
+                    if (imageDataParts.size == 2) {
+                        val base64Image = imageDataParts[1]
+                        val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
+                        val decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                        val imageView = ImageView(itemView.context)
+                        imageView.setImageBitmap(decodedBitmap)
+                        // Convert dp to pixels for width and height
+                        val widthPixels = 200.dpToPx(itemView.context)
+                        val heightPixels = 200.dpToPx(itemView.context)
+                        imageView.layoutParams = ViewGroup.LayoutParams(widthPixels, heightPixels)
+                        println("img ==> $imageView")
+
+
+                        expandableLayout.addView(imageView)
+                    }
+                }
                 expandableLayout.addView(textView)
             }
         }
