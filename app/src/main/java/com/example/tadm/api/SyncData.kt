@@ -1,6 +1,8 @@
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
+import android.database.CursorWindow
+import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import android.widget.Toast
@@ -34,21 +36,25 @@ class SyncData {
     suspend fun syncData(context: Context): Boolean {
         val dbHelper = DatabaseHelper(context)
         val db = dbHelper.writableDatabase
-
+        val initialRecordCount = DatabaseUtils.queryNumEntries(db, "personDetail")
          return withContext(Dispatchers.IO) { try {
 
                 val response = apiService.getPersonDetails().execute()
 
             if (response.isSuccessful) {
                 val personDetails = response.body()
-                println("sync res $personDetails")
+//                println("sync res $personDetails")
+
                 personDetails?.let {
                     db.beginTransaction()
                     try {
-                        db.delete("personDetail", null, null) // Clear existing data
-                        personDetails.forEach { personDetail ->
-                            val contentValues = ContentValues().apply {
-                                put("d_id", personDetail.d_id)
+
+                        if(personDetails.size.toLong() !=initialRecordCount) {
+                            db.delete("personDetail", null, null) // Clear existing data
+
+                            personDetails.forEach { personDetail ->
+                                val contentValues = ContentValues().apply {
+                                    put("d_id", personDetail.d_id)
                                     put("d_name", personDetail.d_name)
                                     put("d_fathername", personDetail.d_fathername)
                                     put("d_address", personDetail.d_address)
@@ -58,35 +64,43 @@ class SyncData {
                                     put("d_destination", personDetail.d_destination)
                                     put("d_duration", personDetail.d_duration)
                                     put("d_routeuse", personDetail.d_routeuse)
-                                    put("d_picurl",personDetail.d_picurl)
+                                    put("d_picurl", personDetail.d_picurl)
                                     put("d_placevislastyear", personDetail.d_placevislastyear)
                                     put("d_age", personDetail.d_age)
-                                    put("is_create",true)
-                                    put("is_sync",true)
+                                    put("is_create", true)
+                                    put("is_sync", true)
                                     put(
                                         "d_familydeatils",
                                         Gson().toJson(personDetail.d_familydeatils)
                                     )
                                     put("d_deradetails", Gson().toJson(personDetail.d_deradetails))
+                                }
+                                db.insert("personDetail", null, contentValues)
                             }
-                            db.insert("personDetail", null, contentValues)
-                        }
 
-                        val currentDateTime = Calendar.getInstance().timeInMillis.toString()
-                        val syncContentValues = ContentValues().apply {
-                            put("datetime", currentDateTime)
-                        }
-                        db.insert("syncData", null, syncContentValues)
+                            val currentDateTime = Calendar.getInstance().timeInMillis.toString()
+                            val syncContentValues = ContentValues().apply {
+                                put("datetime", currentDateTime)
+                            }
+                            db.insert("syncData", null, syncContentValues)
 
-                        db.setTransactionSuccessful()
+                            db.setTransactionSuccessful()
+                            println("API call successful")
+                            printSQLiteData(context)
+                        }
                         return@withContext true  // Synchronization successful
                     } finally {
+
                         db.endTransaction()
+                        db.close()
+
                     }
 
                 } ?:  return@withContext false    // Body is null, synchronization failed
             } else {
                 println("API call unsuccessful, synchronization failed")
+                db.close()
+
                 return@withContext false // API call unsuccessful, synchronization failed
             }
 
@@ -199,10 +213,13 @@ class SyncData {
             null,
             null,
             null,
-            null
+            null  // Order by a column to ensure consistent results
+//            "$limit OFFSET $offset"
         )
 
         cursor?.use {
+            println("count ${it.count}")
+
             while (it.moveToNext()) {
                 val d_familydetailsJson = it.getString(it.getColumnIndexOrThrow("d_familydeatils"))
 

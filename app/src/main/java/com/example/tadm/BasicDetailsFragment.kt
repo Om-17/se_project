@@ -34,8 +34,12 @@ import com.example.tadm.model.NewEntryFormData
 import com.google.android.material.textfield.TextInputEditText
 import java.util.Calendar
 import android.content.ContentResolver
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -205,14 +209,18 @@ class BasicDetailsFragment : Fragment(), BeforeNextClickListener {
                 // Get the URI of the selected image
                 cameraImageUri = data.data
                 cameraImageUri?.let {
+                    val compressedUri =  compressImage(it)
+
                     // Display the selected image in the ImageView
                     val imageView: ImageView = requireView().findViewById(R.id.img)
-                    imageView.setImageURI(cameraImageUri)
+                    imageView.setImageURI(compressedUri)
                 }
             } else if (requestCode == CAMERA_REQUEST_CODE ) {
                 // Display the captured image from the camera
                 val imageView: ImageView = requireView().findViewById(R.id.img)
-                imageView.setImageURI(cameraImageUri)
+                val compressedUri = cameraImageUri?.let { compressImage(it) }
+                compressedUri?.let {
+                imageView.setImageURI(it)}
             }
         }
     }
@@ -252,6 +260,53 @@ class BasicDetailsFragment : Fragment(), BeforeNextClickListener {
         path_string=imageFile.absolutePath
         return imageFile // Return the original file if renaming fails
 
+    }
+    private fun compressImage(uri: Uri): Uri? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
+        val options = BitmapFactory.Options()
+        options.inSampleSize = 2 // Initial sample size
+
+        val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+        inputStream?.close()
+
+        // Log the size of the original image
+        val originalSize = bitmap?.byteCount ?: 0
+        Log.i("ImageCompression", "Original image size: $originalSize bytes")
+
+        val targetSize = 100628 // Target size in bytes
+        var quality = 80 // Initial quality
+
+        val tempFile = File(requireContext().cacheDir, "compressed_image_${System.currentTimeMillis()}.jpg")
+
+        var outputStream: FileOutputStream? = null
+        try {
+            outputStream = FileOutputStream(tempFile)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
+
+            val compressedSize = tempFile.length()
+            Log.i("ImageCompression", "Compressed image size: $compressedSize bytes")
+
+            // Adjust quality iteratively until target size is reached
+            while (compressedSize > targetSize && quality > 0) {
+                outputStream = FileOutputStream(tempFile)
+                quality -= 10 // Decrease quality by 10 units
+                bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                val newCompressedSize = tempFile.length()
+                Log.i("ImageCompression", "New compressed image size: $newCompressedSize bytes")
+            }
+
+            return Uri.fromFile(tempFile)
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return null
+        } finally {
+            outputStream?.close()
+        }
     }
     private fun getImagePathFromUri(uri: Uri, context: Context): String? {
         var path: String? = null

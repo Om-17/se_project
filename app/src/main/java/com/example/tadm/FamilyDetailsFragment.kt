@@ -45,6 +45,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.util.Base64
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -115,22 +116,8 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
 
         return view
     }
-    private val MAX_IMAGE_SIZE_BYTES = 8 * 1024 * 1024 // 8MB in bytes
+    private val MAX_IMAGE_SIZE_BYTES = 3 * 1024 * 1024 // 3MB in bytes
 
-    private fun checkImageSize(uri: Uri): Boolean {
-        val contentResolver = requireContext().contentResolver
-        var inputStream: InputStream? = null
-        try {
-            inputStream = contentResolver.openInputStream(uri)
-            val bytes = inputStream?.available() ?: 0
-            return bytes <= MAX_IMAGE_SIZE_BYTES
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            inputStream?.close()
-        }
-        return false
-    }
 
     private fun openImagePicker(imageView: ImageView) {
         flag = false
@@ -210,22 +197,20 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
                     // Get the imageViewId from the intent extras
 //                    val imageViewId = data.getIntExtra("imageViewId", 0)
                     Log.d("ImageViewId", "Received imageViewId: $imgViewID")
-                    if (checkImageSize(uri)) {
+                    val compressedUri = compressImage(uri)
+                    compressedUri?.let { compressed ->
                         if (imgViewID != 0) {
                             // Find the ImageView using the imageViewId and set the image URI
                             val imageView: ImageView? = requireView().findViewById(imgViewID)
-                            imgViewID=0
+                            imgViewID = 0
                             Log.d("ImageViewId", "Found ImageView: $imageView")
-                            imageView?.setImageURI(uri)
-                            imageView?.tag = uri
+                            imageView?.setImageURI(compressed)
+                            imageView?.tag = compressed
                         } else {
                             Log.e("ImageViewId", "Invalid imageViewId received: $imgViewID")
                         }
-                    } else {
-                        // Image size exceeds the limit, show an error message
-                        Toast.makeText(requireContext(), "Image size exceeds 8MB limit.", Toast.LENGTH_SHORT).show()
-                    }
 
+                    }
                 }
             } else if (requestCode == CAMERA_REQUEST_CODE) {
                 // Get the URI of the captured image from the camera
@@ -233,20 +218,22 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
                 val uri = cameraImageUri
 
                 uri?.let {
-                    // Get the imageViewId from the intent extras
-//                    val imageViewId = data.getIntExtra("imageViewId", 0)
-                    Log.d("ImageViewId", "Received imageViewId from camera: $imgViewID")
-                    if (imgViewID != 0) {
-                        // Find the ImageView using the imageViewId and set the image URI
+                    val compressedUri = compressImage(uri)
+                    compressedUri?.let {
                         val imageView: ImageView? = requireView().findViewById(imgViewID)
-                        imgViewID=0
-                        Log.d("ImageViewId", "Found ImageView from camera: $imageView")
-                        imageView?.setImageURI(uri)
-                        imageView?.tag = uri
-
-                    } else {
-                        Log.e("ImageViewId", "Invalid imageViewId from camera: $imgViewID")
+                        imageView?.setImageURI(it)
+                        imageView?.tag = it
                     }
+//                    // Get the imageViewId from the intent extras
+////                    val imageViewId = data.getIntExtra("imageViewId", 0)
+//                    Log.d("ImageViewId", "Received imageViewId from camera: $imgViewID")
+//                    // Find the ImageView using the imageViewId and set the image URI
+//                    val imageView: ImageView? = requireView().findViewById(imgViewID)
+//                    imgViewID=0
+//                    Log.d("ImageViewId", "Found ImageView from camera: $imageView")
+//                    imageView?.setImageURI(uri)
+//                    imageView?.tag = uri
+
                 }
                 cameraImageUri=null
             }
@@ -292,36 +279,96 @@ class FamilyDetailsFragment : Fragment(),BeforeNextClickListener {
         val storageDir: File? =
             requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val imageFile = File.createTempFile("JPEG_${timeStamp}_", ".jpg", storageDir)
-        Log.i("ImageFile", "Image file path: ${imageFile.absolutePath}")
-//        path_string=imageFile.absolutePath
-        compressImage(imageFile)
+//        Log.i("ImageFile", "Image file path: ${imageFile.absolutePath}")
+
+
         return imageFile // Return the original file if renaming fails
 
     }
-    private fun compressImage(imageFile: File) {
+    private fun compressImage(uri: Uri): Uri? {
+        val inputStream = requireContext().contentResolver.openInputStream(uri)
         val options = BitmapFactory.Options()
-        options.inSampleSize = 2 // Adjust the sample size as needed for compression
+        options.inSampleSize = 2 // Initial sample size
 
-        var inputStream: InputStream? = null
+        val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+        inputStream?.close()
+
+        // Log the size of the original image
+        val originalSize = bitmap?.byteCount ?: 0
+        Log.i("ImageCompression", "Original image size: $originalSize bytes")
+
+        val targetSize = 100628 // Target size in bytes
+        var quality = 80 // Initial quality
+
+        val tempFile = File(requireContext().cacheDir, "compressed_image_${System.currentTimeMillis()}.jpg")
+
         var outputStream: FileOutputStream? = null
-
         try {
-            inputStream = FileInputStream(imageFile)
-            val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+            outputStream = FileOutputStream(tempFile)
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+            outputStream.flush()
+            outputStream.close()
 
-            outputStream = FileOutputStream(imageFile)
-            bitmap?.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+            val compressedSize = tempFile.length()
+            Log.i("ImageCompression", "Compressed image size: $compressedSize bytes")
 
-            // Recycle the bitmap to free up memory
-            bitmap?.recycle()
-        // Adjust compression quality as needed
+            // Adjust quality iteratively until target size is reached
+            while (compressedSize > targetSize && quality > 0) {
+                outputStream = FileOutputStream(tempFile)
+                quality -= 10 // Decrease quality by 10 units
+                bitmap?.compress(Bitmap.CompressFormat.JPEG, quality, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                val newCompressedSize = tempFile.length()
+                Log.i("ImageCompression", "New compressed image size: $newCompressedSize bytes")
+            }
+
+            return Uri.fromFile(tempFile)
         } catch (e: IOException) {
             e.printStackTrace()
+            return null
         } finally {
-            inputStream?.close()
             outputStream?.close()
         }
     }
+
+//    private fun compressImage(uri: Uri): Uri? {
+//        val inputStream = requireContext().contentResolver.openInputStream(uri)
+//        val options = BitmapFactory.Options()
+//        options.inSampleSize = 2 // Adjust the sample size as needed for compression
+//
+//        val bitmap = BitmapFactory.decodeStream(inputStream, null, options)
+//        inputStream?.close()
+//
+//        // Log the size of the original image
+//        val originalSize = bitmap?.byteCount ?: 0
+//        Log.i("ImageCompression", "Original image size: $originalSize bytes")
+//
+//        val compressedBitmap = bitmap?.let {
+//            val outputStream = ByteArrayOutputStream()
+//            it.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+//            BitmapFactory.decodeStream(ByteArrayInputStream(outputStream.toByteArray()))
+//        }
+//        val timeStamp: String =SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+//
+//        val tempFile = File(requireContext().cacheDir, "compressed_image${timeStamp}_.jpg")
+//        val outputStream = FileOutputStream(tempFile)
+//        compressedBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, outputStream)
+//        outputStream.flush()
+//        outputStream.close()
+//
+//        val compressedSize = tempFile.length()
+//        Log.i("ImageCompression", "Compressed image size: $compressedSize bytes")
+//
+//        return if (tempFile.exists()) Uri.fromFile(tempFile) else null
+//    }
+
+
+    // Update the onActivityResult method to use compressImage and set the compressed image to the ImageView
+
+
+
     private fun addNewForm(isFirstRecord:Boolean) {
         // Inflate the input box layout for a new form
         val inputLayout = LayoutInflater.from(requireContext())

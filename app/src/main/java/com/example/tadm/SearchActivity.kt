@@ -167,6 +167,7 @@ class SearchActivity : AppCompatActivity() {
                         object : TypeToken<List<FamilyDetail>>() {}.type
                     )
                 )
+//                    println(personDetail)
                 personList.add(personDetail)
             }
             }
@@ -211,7 +212,8 @@ class SearchActivity : AppCompatActivity() {
                 null,
                 null,
                 null,
-                null
+                 null // Order by a column to ensure consistent results
+
             )
             personList.clear()
             adapter.notifyDataSetChanged()

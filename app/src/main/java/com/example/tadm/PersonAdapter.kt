@@ -206,7 +206,7 @@ class PersonAdapter(private val context: Context, private val personList: List<P
                 // Set image to ImageView
                 if (detail.image_base64.isNotEmpty()) {
                     val imageDataParts = detail.image_base64.split(";base64")
-                    println(imageDataParts)
+//                    println(imageDataParts)
                     if (imageDataParts.size == 2) {
                         val base64Image = imageDataParts[1]
                         val decodedBytes = Base64.decode(base64Image, Base64.DEFAULT)
@@ -217,7 +217,7 @@ class PersonAdapter(private val context: Context, private val personList: List<P
                         val widthPixels = 200.dpToPx(itemView.context)
                         val heightPixels = 200.dpToPx(itemView.context)
                         imageView.layoutParams = ViewGroup.LayoutParams(widthPixels, heightPixels)
-                        println("img ==> $imageView")
+//                        println("img ==> $imageView")
 
 
                         expandableLayout.addView(imageView)
