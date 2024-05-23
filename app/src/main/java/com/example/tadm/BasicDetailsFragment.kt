@@ -210,7 +210,7 @@ class BasicDetailsFragment : Fragment(), BeforeNextClickListener {
                 cameraImageUri = data.data
                 cameraImageUri?.let {
                     val compressedUri =  compressImage(it)
-
+                    cameraImageUri=compressedUri
                     // Display the selected image in the ImageView
                     val imageView: ImageView = requireView().findViewById(R.id.img)
                     imageView.setImageURI(compressedUri)
@@ -220,7 +220,10 @@ class BasicDetailsFragment : Fragment(), BeforeNextClickListener {
                 val imageView: ImageView = requireView().findViewById(R.id.img)
                 val compressedUri = cameraImageUri?.let { compressImage(it) }
                 compressedUri?.let {
-                imageView.setImageURI(it)}
+                imageView.setImageURI(it)
+                    cameraImageUri=compressedUri
+
+                }
             }
         }
     }
@@ -378,7 +381,8 @@ class BasicDetailsFragment : Fragment(), BeforeNextClickListener {
             pvlyTxt.text.toString(),
             img,
             null,
-            null,path_string,
+            null,
+            path_string,
             flag,
             ageTxt.text.toString()
         )

@@ -19,8 +19,10 @@ data class NewEntryFormData(
     var d_deradetails: String? =null,
     var d_url: String? = "",
     var is_camera:Boolean= false,
-    var d_age:String?=null
-    )
+    var d_age:String?=null,
+    var id:Int=0,
+    var is_sync:Boolean=false
+)
 
 data class PersonDetail(
     val id: Int,
@@ -39,7 +41,8 @@ data class PersonDetail(
     val d_familydeatils: List<FamilyDetail>?= emptyList(),
     val d_deradetails: Map<String, String>? = null,
     var isExpanded: Boolean = false ,// default value is false
-    var d_age:String=""
+    var d_age:String="",
+    var is_sync:Boolean=false
 )
 
 data class FamilyDetail(

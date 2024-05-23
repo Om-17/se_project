@@ -23,8 +23,21 @@ import com.example.tadm.util.ConnectivityUtil
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.net.Uri
+import android.os.Build
+import android.util.Base64
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import com.example.tadm.util.DatabaseHelper
 import com.example.tadm.util.Loader
+import com.example.tadm.util.SnackbarUtils
+import okhttp3.MultipartBody
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.io.File
 
 class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickListener  {
     private var currentStep = 0
@@ -125,10 +138,58 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
         btnSave.setOnClickListener {
             onBeforeNextClicked()
             println(formdata)
+            var error:Boolean =false
+            if (formdata.d_id.isNullOrEmpty()){
+                val snackbarUtils = SnackbarUtils(this)
+                val rootView = findViewById<View>(android.R.id.content)
+                snackbarUtils.showSnackbar(rootView, "Id is Required ")
+                error=true
+            }
+            if (formdata.d_name.isNullOrEmpty()){
+                val snackbarUtils = SnackbarUtils(this)
+                val rootView = findViewById<View>(android.R.id.content)
+                snackbarUtils.showSnackbar(rootView, "Name is Required ")
+                error=true
+
+            }
+            if (formdata.d_mobno.isEmpty()){
+                val snackbarUtils = SnackbarUtils(this)
+                val rootView = findViewById<View>(android.R.id.content)
+                snackbarUtils.showSnackbar(rootView, "Moblie No is Required ")
+                error=true
+            }
+            if(error){
+                return@setOnClickListener
+            }
             btnSave.visibility=View.INVISIBLE
             showLoader()
+
+
             if (!ConnectivityUtil.isInternetAvailable(this)) {
-                showConnectivityAlert()
+//                var imageUri= Uri.parse(formdata.d_url.toString())
+//                var imageFile = File(imageUri?.path ?: "")
+//                var imgbase64: String? =null
+//                if (imageFile.exists()) {
+//                    imgbase64=convertImageToBase64(imageUri,this)
+//                }
+
+                val dbHelper = DatabaseHelper(this)
+                if (dbHelper.doesPersonDetailExist(formdata.d_id)) {
+//                    Toast.makeText(this, "Person with this ID already exists.", Toast.LENGTH_SHORT).show()
+                    val snackbarUtils = SnackbarUtils(this)
+                    val rootView = findViewById<View>(android.R.id.content)
+                    snackbarUtils.showSnackbar(rootView, "Person with this ID already exists.")
+                    return@setOnClickListener
+                }
+                dbHelper.insertPersonDetail(formdata)
+                hideLoader()
+                btnSave.visibility = View.VISIBLE
+                Toast.makeText(this, "Data saved locally.", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, MainActivity::class.java)
+
+                startActivity(intent)
+                finish()
+
             } else {
 
                 ApiHelper.uploadFormData(
@@ -149,7 +210,12 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
                         finish()
                     },
                     onFailure = { throwable ->
-                        Toast.makeText(this, throwable.message, Toast.LENGTH_SHORT).show()
+
+                        val snackbarUtils = SnackbarUtils(this)
+                        val rootView = findViewById<View>(android.R.id.content)
+                        snackbarUtils.showSnackbar(rootView, parseErrorMessage(throwable.message))
+
+//                        Toast.makeText(this, parseErrorMessage(throwable.message), Toast.LENGTH_SHORT).show()
                         btnSave.visibility = View.VISIBLE
                         hideLoader()
 
@@ -161,7 +227,34 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
         }
     }
 
-        private fun getTabTitle(position: Int): String {
+
+    private fun parseErrorMessage(errorBody: String?): String {
+         try {
+            val jsonObject = JSONObject(errorBody)
+            val errorMessage = StringBuilder()
+            val keys = jsonObject.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                val errorArray = jsonObject.getJSONArray(key)
+                errorMessage.append("$key: ")
+                for (i in 0 until errorArray.length()) {
+                    errorMessage.append(errorArray.getString(i))
+                    if (i != errorArray.length() - 1) {
+                        errorMessage.append(", ")
+                    }
+                }
+                errorMessage.append("\n")
+            }
+            return errorMessage.toString().trim()
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+           return  errorBody.toString()
+        }
+    }
+
+
+    private fun getTabTitle(position: Int): String {
         return when (position) {
             0 -> "Basic Details"
             1 -> "Family Details"
@@ -174,11 +267,27 @@ class NewEntryForm : AppCompatActivity(), FragmentDataListener,BeforeNextClickLi
             loader.show()
         }
     }
+
     private fun hideLoader() {
         if (loader.isShowing) {
             loader.dismiss()
         }
     }
+    private fun convertImageToBase64(uri: Uri?, context: Context): String? {
+        uri ?: return null
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        val buffer = ByteArrayOutputStream()
+        val bufferLength = 1024
+        val data = ByteArray(bufferLength)
+        var length: Int
+        while (inputStream.read(data, 0, bufferLength).also { length = it } != -1) {
+            buffer.write(data, 0, length)
+        }
+        val base64String = Base64.encodeToString(buffer.toByteArray(), Base64.DEFAULT)
+        inputStream.close()
+        return base64String
+    }
+
     private fun showConnectivityAlert() {
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.apply {

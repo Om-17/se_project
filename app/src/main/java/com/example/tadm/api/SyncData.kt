@@ -1,21 +1,24 @@
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
-import android.database.CursorWindow
 import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.tadm.api.ApiGetNewEntryService
+import com.example.tadm.api.ApiHelper
 import com.example.tadm.api.Config
 import com.example.tadm.model.FamilyDetail
 import com.example.tadm.model.PersonDetail
 import com.example.tadm.util.DatabaseHelper
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,12 +33,116 @@ class SyncData {
     private val apiService: ApiGetNewEntryService =
         retrofit.create(ApiGetNewEntryService::class.java)
 
-    fun createDataSync(context: Context){
 
+    private fun syncOfflineData(context: Context) {
+        val dbHelper = DatabaseHelper(context)
+        val unsyncedData = dbHelper.getUnsyncedPersonDetails()
+
+        for (personDetail in unsyncedData) {
+            ApiHelper.uploadFormData(
+                personDetail,
+                onResponse = { response ->
+                    dbHelper.updatePersonDetailSyncStatus(personDetail.d_id, true)
+                    println("Synced data: ${personDetail.d_id}")
+                },
+                onFailure = { throwable ->
+                    println("Failed to sync data: ${personDetail.d_id}, ${throwable.message}")
+                }
+            )
+        }
     }
+//    suspend fun syncData(context: Context): Boolean {
+//        val dbHelper = DatabaseHelper(context)
+//        val db = dbHelper.writableDatabase
+//
+//        syncOfflineData(context)
+//
+//        return withContext(Dispatchers.IO) {
+//            try {
+//                val response = apiService.getPersonDetails().execute()
+//
+//                if (response.isSuccessful) {
+//                    val personDetails = response.body()
+//
+//                    personDetails?.let {
+//                        db.beginTransaction()
+//                        try {
+//                            for (personDetail in personDetails) {
+//
+//                             if(!dbHelper.doesPersonDetailExist(personDetail.d_id)){
+////                                val cursor = db.query(
+////                                    "personDetail",
+////                                    null,
+////                                    "d_id = ?",
+////                                    arrayOf(personDetail.d_id.toString()),
+////                                    null,
+////                                    null,
+////                                    null
+////                                )
+//
+//                                val contentValues = ContentValues().apply {
+//                                    put("d_name", personDetail.d_name)
+//                                    put("d_fathername", personDetail.d_fathername)
+//                                    put("d_address", personDetail.d_address)
+//                                    put("d_religion", personDetail.d_religion)
+//                                    put("d_maritalstatus", personDetail.d_maritalstatus)
+//                                    put("d_mobno", personDetail.d_mobno.toString())
+//                                    put("d_destination", personDetail.d_destination)
+//                                    put("d_duration", personDetail.d_duration)
+//                                    put("d_routeuse", personDetail.d_routeuse)
+//                                    put("d_picurl", personDetail.d_picurl)
+//                                    put("d_placevislastyear", personDetail.d_placevislastyear)
+//                                    put("d_age", personDetail.d_age)
+//                                    put("is_sync", true)
+//                                    put("d_familydeatils", Gson().toJson(personDetail.d_familydeatils))
+//                                    put("d_deradetails", Gson().toJson(personDetail.d_deradetails))
+//                                }
+//
+////                                if (cursor.moveToFirst()) {
+////                                    db.update("personDetail", contentValues, "d_id = ?", arrayOf(personDetail.d_id.toString()))
+////                                } else {
+//                                    contentValues.put("d_id", personDetail.d_id)
+//                                    db.insert("personDetail", null, contentValues)
+////                                }
+////                                cursor.close()
+//                             }
+//                            }
+//
+//                            val currentDateTime = Calendar.getInstance().timeInMillis.toString()
+//                            val syncContentValues = ContentValues().apply {
+//                                put("datetime", currentDateTime)
+//                            }
+//                            db.insert("syncData", null, syncContentValues)
+//
+//                            db.setTransactionSuccessful()
+//                            println("API call successful")
+//                        } finally {
+//                            db.endTransaction()
+//                            db.close()
+//                        }
+//                        return@withContext true  // Synchronization successful
+//                    } ?: return@withContext false    // Body is null, synchronization failed
+//                } else {
+//                    println("API call unsuccessful, synchronization failed")
+//                    db.close()
+//                    return@withContext false // API call unsuccessful, synchronization failed
+//                }
+//            } catch (e: Exception) {
+//                withContext(Dispatchers.Main) {
+//                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+//                }
+//                println(e)
+//                println("Exception occurred, synchronization failed")
+//                return@withContext false // Exception occurred, synchronization failed
+//            } finally {
+//                db.close()
+//            }
+//        }
+//    }
     suspend fun syncData(context: Context): Boolean {
         val dbHelper = DatabaseHelper(context)
         val db = dbHelper.writableDatabase
+        syncOfflineData(context)
         val initialRecordCount = DatabaseUtils.queryNumEntries(db, "personDetail")
          return withContext(Dispatchers.IO) { try {
 
@@ -43,7 +150,7 @@ class SyncData {
 
             if (response.isSuccessful) {
                 val personDetails = response.body()
-//                println("sync res $personDetails")
+                println("sync res")
 
                 personDetails?.let {
                     db.beginTransaction()
@@ -67,7 +174,7 @@ class SyncData {
                                     put("d_picurl", personDetail.d_picurl)
                                     put("d_placevislastyear", personDetail.d_placevislastyear)
                                     put("d_age", personDetail.d_age)
-                                    put("is_create", true)
+
                                     put("is_sync", true)
                                     put(
                                         "d_familydeatils",
@@ -77,6 +184,7 @@ class SyncData {
                                 }
                                 db.insert("personDetail", null, contentValues)
                             }
+                            println("complete")
 
                             val currentDateTime = Calendar.getInstance().timeInMillis.toString()
                             val syncContentValues = ContentValues().apply {
@@ -86,7 +194,7 @@ class SyncData {
 
                             db.setTransactionSuccessful()
                             println("API call successful")
-                            printSQLiteData(context)
+//                            printSQLiteData(context)
                         }
                         return@withContext true  // Synchronization successful
                     } finally {
@@ -113,76 +221,12 @@ class SyncData {
              return@withContext false // Exception occurred, synchronization failed
         } finally {
             db.close()
-                printSQLiteData(context)
+//                printSQLiteData(context)
 
             // Print SQLite data here
         }
     }
     }
-
-//    fun syncData(context: Context) {
-//        val dbHelper = DatabaseHelper(context)
-//        val db = dbHelper.writableDatabase
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//
-//            try {
-//                val response = apiService.getPersonDetails().execute()
-//
-//                if (response.isSuccessful) {
-//                    val personDetails = response.body()
-//                    println(personDetails)
-//                    personDetails?.let {
-//                        db.beginTransaction()
-//                        try {
-//                            db.delete("personDetail", null, null) // Clear existing data
-//                            personDetails.forEach { personDetail ->
-//                                val contentValues = ContentValues().apply {
-//                                    put("d_id", personDetail.d_id)
-//                                    put("d_name", personDetail.d_name)
-//                                    put("d_fathername", personDetail.d_fathername)
-//                                    put("d_address", personDetail.d_address)
-//                                    put("d_religion", personDetail.d_religion)
-//                                    put("d_maritalstatus", personDetail.d_maritalstatus)
-//                                    put("d_mobno", personDetail.d_mobno.toString())
-//                                    put("d_destination", personDetail.d_destination)
-//                                    put("d_duration", personDetail.d_duration)
-//                                    put("d_routeuse", personDetail.d_routeuse)
-//                                    put("d_placevislastyear", personDetail.d_placevislastyear)
-//                                    put(
-//                                        "d_familydeatils",
-//                                        Gson().toJson(personDetail.d_familydeatils)
-//                                    )
-//                                    put("d_deradetails", Gson().toJson(personDetail.d_deradetails))
-//                                }
-//                                db.insert("personDetail", null, contentValues)
-//                            }
-//
-//                            val currentDateTime = Calendar.getInstance().timeInMillis.toString()
-//                            val syncContentValues = ContentValues().apply {
-//                                put("datetime", currentDateTime)
-//                            }
-//                            db.insert("syncData", null, syncContentValues)
-//
-//
-//
-//                            db.setTransactionSuccessful()
-//                        } finally {
-//                            db.endTransaction()
-//                        }
-//                    }
-//                } else {
-//                    // Handle unsuccessful API call
-//                }
-//
-//            } catch (e: Exception) {
-//                // Handle API call or JSON parsing errors
-//            } finally {
-//                db.close()
-//                printSQLiteData(context)
-//            }
-//        }
-//    }
 
     fun printSQLiteData(context: Context) {
         try{

@@ -14,9 +14,9 @@
     <string name="save">Save</string>
     <string name="person">person</string>
     <string name="add_photo">Add Photo</string>
-    <string name="name">Name</string>
+    <string name="name">Name*</string>
     <string name="religion">Religion</string>
-    <string name="mobile_no">Mobile No</string>
+    <string name="mobile_no">Mobile No*</string>
     <string name="father_name">Father Name</string>
     <string name="address">Address</string>
     <string name="marital_status">Marital Status</string>
@@ -36,7 +36,7 @@
     <string name="goat">Goat</string>
     <string name="camera">camera</string>
     <string name="gender">Gender</string>
-    <string name="id">ID</string>
+    <string name="id">ID*</string>
     <string name="search_category">Search Category</string>
     <string name="confirmation">Confirmation</string>
     <string name="are_you_sure_you_want_to_proceed">are you sure you want to proceed</string>
